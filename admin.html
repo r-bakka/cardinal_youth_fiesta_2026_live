@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Cardinal Youth Fiesta Scoreboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+
+<!-- LOGIN -->
+<section class="login-screen" id="loginScreen">
+  <form class="login-card" id="loginForm">
+    <div class="crown">👑</div>
+    <h1>Admin Login</h1>
+    <div class="field">
+      <label for="loginEmail">Email</label>
+      <input type="email" id="loginEmail" required autocomplete="username">
+    </div>
+    <div class="field">
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" required autocomplete="current-password">
+    </div>
+    <p class="error-msg" id="loginError"></p>
+    <button class="btn-primary" type="submit">Log In</button>
+  </form>
+</section>
+
+<!-- DASHBOARD -->
+<div class="admin-wrap" id="dashboard" style="display:none;">
+  <div class="admin-header">
+    <h1>🛡️ Scoreboard Admin</h1>
+    <button class="btn-logout" id="logoutBtn">Log Out</button>
+  </div>
+
+  <div class="panels">
+
+    <div class="panel">
+      <h2>Quick Score Update</h2>
+      <p class="hint">Add (or subtract) points directly to a house's total.</p>
+      <form id="quickForm">
+        <div class="field">
+          <label for="quickHouse">House</label>
+          <select id="quickHouse" required>
+            <option value="yellow">Yellow House</option>
+            <option value="green">Green House</option>
+            <option value="blue">Blue House</option>
+            <option value="red">Red House</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="quickPoints">Points to add</label>
+          <input type="number" id="quickPoints" placeholder="e.g. 10 or -5" required>
+        </div>
+        <button class="btn-primary" type="submit">Add Points</button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>Result Entry</h2>
+      <p class="hint">Announces on the public screen with an animation, then returns to standings.</p>
+      <form id="resultForm">
+        <div class="field">
+          <label for="resStudent">Student name</label>
+          <input type="text" id="resStudent" required>
+        </div>
+        <div class="field">
+          <label for="resClass">Class</label>
+          <input type="text" id="resClass" placeholder="e.g. 9 A" required>
+        </div>
+        <div class="field">
+          <label for="resProgramme">Programme</label>
+          <input type="text" id="resProgramme" placeholder="e.g. Elocution" required>
+        </div>
+        <div class="field">
+          <label for="resRank">Rank</label>
+          <select id="resRank" required>
+            <option value="1st Place">1st Place</option>
+            <option value="2nd Place">2nd Place</option>
+            <option value="3rd Place">3rd Place</option>
+            <option value="Participation">Participation</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="resHouse">House</label>
+          <select id="resHouse" required>
+            <option value="yellow">Yellow House</option>
+            <option value="green">Green House</option>
+            <option value="blue">Blue House</option>
+            <option value="red">Red House</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="resPoints">Points to add (optional)</label>
+          <input type="number" id="resPoints" placeholder="Leave blank for 0">
+        </div>
+        <button class="btn-primary" type="submit">Announce Result</button>
+      </form>
+    </div>
+
+    <div class="panel panel-full">
+      <h2>Recent Activity</h2>
+      <ul class="activity-list" id="activityList">
+        <li class="meta">Nothing yet.</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module" src="admin.js"></script>
+</body>
+</html>
