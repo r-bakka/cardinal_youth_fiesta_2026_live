@@ -10,44 +10,39 @@
 </head>
 <body>
 
-<div class="bunting" id="bunting"></div>
+<div class="stage" id="stage">
 
-<header class="site-header">
+  <img class="bg-layer" src="assets/bg.png" alt="" aria-hidden="true">
+
   <div class="brand">
-    <span class="brand-crest">🛡️</span>
+    <img src="assets/logo.png" alt="Cardinal HSS Thrikkakara logo">
     <span>CARDINAL HSS<br>THRIKKAKARA</span>
   </div>
-  <div class="tagline">Different Houses<br>Same Dream</div>
-</header>
 
-<div class="title-banner">
-  <div class="ribbon">
-    <span class="crown">👑</span>
-    <h1><small>Cardinal</small>Youth Fiesta</h1>
-    <span class="subline">Live Scoreboard</span>
+  <div class="tagline">Different Houses<br><u>Same Dream</u></div>
+
+  <img class="title-img" src="assets/title.png" alt="Cardinal Youth Fiesta — Learn, Create, Celebrate — Overall Standings">
+
+  <main class="house-row" id="houseRow" aria-live="polite">
+    <!-- house cards injected by app.js -->
+  </main>
+
+  <!-- Announcement overlay -->
+  <div class="announce-overlay" id="announceOverlay">
+    <div class="announce-card" id="announceCard">
+      <span class="announce-eyebrow">New Result</span>
+      <div class="announce-medal" id="announceMedal">🥇</div>
+      <h2 class="announce-name" id="announceName">Student Name</h2>
+      <p class="announce-meta" id="announceMeta">Class · Programme</p>
+      <span class="announce-house" id="announceHouse">🦁 Yellow House</span>
+    </div>
   </div>
+
 </div>
-
-<div class="section-banner"><span>Overall Standings</span></div>
-
-<main class="house-grid" id="houseGrid" aria-live="polite">
-  <!-- house cards injected by app.js -->
-</main>
 
 <footer class="site-footer">
   Updated live during the festival · <a href="admin.html">Admin</a>
 </footer>
-
-<!-- Announcement overlay -->
-<div class="announce-overlay" id="announceOverlay">
-  <div class="announce-card" id="announceCard">
-    <span class="announce-eyebrow">New Result</span>
-    <div class="announce-medal" id="announceMedal">🥇</div>
-    <h2 class="announce-name" id="announceName">Student Name</h2>
-    <p class="announce-meta" id="announceMeta">Class · Programme</p>
-    <span class="announce-house" id="announceHouse">🦁 Yellow House</span>
-  </div>
-</div>
 
 <script type="module" src="app.js"></script>
 </body>

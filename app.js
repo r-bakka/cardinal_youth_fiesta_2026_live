@@ -3,18 +3,18 @@ import {
   collection, onSnapshot, query, orderBy, limit
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* ---------- bunting flags ---------- */
-const buntingColors = ["#e0604c", "#e9c15c", "#3fae6c", "#4c86dc", "#e9c15c", "#e0604c", "#3fae6c", "#4c86dc"];
-const bunting = document.getElementById("bunting");
-for (let i = 0; i < 16; i++) {
-  const flag = document.createElement("span");
-  flag.style.setProperty("--flag-color", buntingColors[i % buntingColors.length]);
-  bunting.appendChild(flag);
+/* ---------- keep the poster's proportions at any screen size ---------- */
+const stage = document.getElementById("stage");
+function updateScale() {
+  stage.style.setProperty("--scale", stage.clientWidth / 1671);
 }
+updateScale();
+window.addEventListener("resize", updateScale);
+new ResizeObserver(updateScale).observe(stage);
 
 /* ---------- standings ---------- */
 const RANK_LABELS = ["1st", "2nd", "3rd", "4th"];
-const grid = document.getElementById("houseGrid");
+const row = document.getElementById("houseRow");
 const pointsCache = {}; // houseId -> currently displayed points, for count-up animation
 
 function animateNumber(el, from, to) {
@@ -33,7 +33,7 @@ function renderHouses(dataById) {
   const ids = Object.keys(HOUSES);
   const sorted = [...ids].sort((a, b) => (dataById[b]?.points || 0) - (dataById[a]?.points || 0));
 
-  grid.innerHTML = "";
+  row.innerHTML = "";
   sorted.forEach((id, index) => {
     const info = HOUSES[id];
     const points = dataById[id]?.points || 0;
@@ -42,13 +42,17 @@ function renderHouses(dataById) {
     const card = document.createElement("div");
     card.className = `house-card house-${id}${isLeader ? " leader" : ""}`;
     card.innerHTML = `
-      <span class="icon">${info.icon}</span>
-      <div class="name">${info.label}</div>
-      <div class="points-label">Points</div>
-      <div class="points" id="pts-${id}">${pointsCache[id] ?? 0}</div>
-      <span class="rank-pill">${RANK_LABELS[index] || `${index + 1}th`}</span>
+      <img class="card-frame" src="assets/card-${id}.png" alt="${info.label}">
+      <div class="card-text">
+        <div class="card-name">${info.label.replace(" House", "")}</div>
+        <div class="card-house-label">House</div>
+        <div class="card-divider"></div>
+        <div class="card-points" id="pts-${id}">${pointsCache[id] ?? 0}</div>
+        <div class="card-points-label">Points</div>
+        <div class="card-rank">${RANK_LABELS[index] || `${index + 1}th`}</div>
+      </div>
     `;
-    grid.appendChild(card);
+    row.appendChild(card);
 
     const el = document.getElementById(`pts-${id}`);
     const from = pointsCache[id] ?? 0;

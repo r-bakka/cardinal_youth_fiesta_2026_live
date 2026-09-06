@@ -1,5 +1,13 @@
 # Cardinal Youth Fiesta — Live Scoreboard
 
+The public page is built from your own poster art in **/assets** (background,
+title banner, the four house cards, school logo). It's a fixed-proportion
+"stage" that scales as one piece to any screen — like a poster shrinking or
+growing, not a page that reflows. If you ever swap in new art, keep the same
+filenames (`bg.png`, `title.png`, `logo.png`, `card-yellow.png`, `card-green.png`,
+`card-blue.png`, `card-red.png`) and it'll drop right in.
+
+
 Two pages:
 - **index.html** — public standings screen (project on the big screen / share the link)
 - **admin.html** — password-protected page for updating scores during the event
