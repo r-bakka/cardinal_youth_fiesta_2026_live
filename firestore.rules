@@ -8,12 +8,22 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
-    // Result announcements — anyone can read, only logged-in admins can create.
-    // No edits/deletes from the client, so the activity log can't be tampered with.
+    // Result announcements — anyone can read; only logged-in admins can create,
+    // remove, or update (update is only ever used to bump `publishedAt` for
+    // the "Show Again" button — the admin UI never edits result fields).
     match /announcements/{annId} {
       allow read: if true;
       allow create: if request.auth != null;
-      allow update, delete: if false;
+      allow update: if request.auth != null;
+      allow delete: if request.auth != null;
+    }
+
+    // Thought / announcement messages — same access pattern as results.
+    match /messages/{msgId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null;
+      allow delete: if request.auth != null;
     }
   }
 }

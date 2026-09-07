@@ -6,8 +6,8 @@
 <title>Admin — Cardinal Youth Fiesta Scoreboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="admin-styles.css">
+<link rel="stylesheet" href="styles.css?v=3">
+<link rel="stylesheet" href="admin-styles.css?v=3">
 </head>
 <body>
 
@@ -108,11 +108,26 @@
       </ul>
     </div>
 
+    <div class="panel panel-full">
+      <h2>Thoughts / Announcement</h2>
+      <p class="hint">Publishes a short message on the public screen with the same animation, then returns to standings.</p>
+      <form id="thoughtForm">
+        <div class="field">
+          <label for="thoughtText">Message</label>
+          <textarea id="thoughtText" placeholder="e.g. Lunch break in 10 minutes!" required></textarea>
+        </div>
+        <button class="btn-primary" type="submit">Publish</button>
+      </form>
+      <ul class="activity-list" id="thoughtsList" style="margin-top:1rem;">
+        <li class="meta">Nothing yet.</li>
+      </ul>
+    </div>
+
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script type="module" src="admin.js"></script>
+<script type="module" src="admin.js?v=3"></script>
 </body>
 </html>

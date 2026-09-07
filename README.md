@@ -70,6 +70,29 @@ need the site served over `http(s)`, so use a simple local server
 (e.g. `python3 -m http.server`) rather than double-clicking the file, if testing before
 deploying.
 
+## Updating the site later (cache-busting)
+
+Every local CSS/JS file is loaded with a `?v=2` on the end (e.g. `styles.css?v=2`,
+`app.js?v=2`) in `index.html`/`admin.html`, and `app.js`/`admin.js` import
+`firebase-config.js` the same way. Browsers (and especially projector/TV
+browsers, which cache aggressively) treat `file.js?v=2` as a different file
+from `file.js?v=1`, so this is what forces everyone to pick up your latest
+version instead of an old cached copy.
+
+**Whenever you edit `styles.css`, `admin-styles.css`, `app.js`, `admin.js`, or
+`firebase-config.js` and re-upload,** bump every `?v=2` in this project up by
+one (to `?v=3`, then `?v=4`, ...) — in `index.html`, `admin.html`, `app.js`,
+and `admin.js`. It doesn't matter what the number is, only that it changes.
+
+## Removing a result
+
+Each row in the admin's **Recent Activity** list has a small ✕ button. Removing
+a result deletes it from the public activity log and, if it had added points,
+subtracts that same amount back off the house's total — so the standings stay
+consistent. This can't be undone from the UI (though the house's total can
+always be corrected again with **Quick Score Update** if needed).
+
+
 ## How it works
 
 - **Quick Score Update** (admin) — adds/subtracts points directly to a house's running
@@ -79,5 +102,36 @@ deploying.
   an animated intro, holds for ~6 seconds, then fades back into the (already updated)
   overall standings. If you also fill in "Points to add," that amount is added to the
   house's total at the same time.
+- **Recent Activity** (admin) — every result you've entered, newest first. Each row has:
+  - **👁 Show Again** — replays that result's animation on the public screen right now,
+    without creating a duplicate entry. Handy in a lull between events.
+  - **✕ Remove** — deletes the result. If it had added points, those points are
+    automatically subtracted back out of that house's total, so the standings stay correct.
+- **Thoughts / Announcement** (admin) — a free-text box for anything that isn't a result:
+  "Lunch break in 10 minutes," a shoutout, a reminder. **Publish** shows it on the public
+  screen with the same intro/outro animation as a result. Past messages get the same
+  **👁 Show Again** / **✕ Remove** controls as results.
 - The public page never needs to be refreshed — it listens live to Firestore and
   updates automatically, from any number of screens/devices at once.
+
+## Cache-busting when you edit the code
+
+`index.html` and `admin.html` load `styles.css`, `admin-styles.css`, `app.js`, and
+`admin.js` with a `?v=3` on the end (and `app.js`/`admin.js` import `firebase-config.js`
+the same way). That query string is what makes browsers — and especially a projector or
+kiosk device that's been showing the same tab for hours — fetch your latest file instead
+of a cached copy. **Whenever you edit any of those files, bump the number** (`?v=4`, then
+`?v=5`, …) in every place it appears — both HTML files' `<link>`/`<script>` tags, and the
+`import ... from "./firebase-config.js?v=3"` line at the top of `app.js` and `admin.js`.
+It only needs to be *different from before*, not sequential — a quick find-and-replace
+across all four files is enough.
+
+## If you already deployed an earlier version
+
+This update adds a `publishedAt` field to result/message documents (separate from the
+original `timestamp`/`createdAt`) so "Show Again" can re-trigger the public screen
+without creating a new entry. Anything created before this change won't have that field.
+It'll still show up fine in the admin lists, but won't appear in the "currently showing"
+live query until you press **Show Again** on it once (which sets `publishedAt` for the
+first time). Nothing needs to be manually fixed in Firestore.
+

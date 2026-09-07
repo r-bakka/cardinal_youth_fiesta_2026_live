@@ -1,12 +1,17 @@
-import { db, HOUSES } from "./firebase-config.js";
+import { db, HOUSES } from "./firebase-config.js?v=3";
 import {
   collection, onSnapshot, query, orderBy, limit
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* ---------- keep the poster's proportions at any screen size ---------- */
+/* keep the poster's proportions at any screen size — sets both a CSS
+   custom property (for scaling text) and an explicit pixel height as a
+   fallback for any renderer that doesn't honor the `aspect-ratio` CSS
+   property (some embedded/TV browsers used on projectors still don't). */
 const stage = document.getElementById("stage");
 function updateScale() {
-  stage.style.setProperty("--scale", stage.clientWidth / 1671);
+  const w = stage.clientWidth;
+  stage.style.setProperty("--scale", w / 1671);
+  stage.style.height = (w * (941 / 1671)) + "px";
 }
 updateScale();
 window.addEventListener("resize", updateScale);
@@ -45,7 +50,7 @@ function renderHouses(dataById) {
       <img class="card-frame" src="assets/card-${id}.png" alt="${info.label}">
       <div class="card-text">
         <div class="card-name">${info.label.replace(" House", "")}</div>
-        <div class="card-house-label"></div>
+        <div class="card-house-label">House</div>
         <div class="card-divider"></div>
         <div class="card-points" id="pts-${id}">${pointsCache[id] ?? 0}</div>
         <div class="card-points-label">Points</div>
@@ -67,7 +72,40 @@ onSnapshot(collection(db, "houses"), (snap) => {
   renderHouses(dataById);
 });
 
-/* ---------- announcement overlay ---------- */
+/* helper: turns a Firestore doc into a "did this actually change" key.
+   Keying on id + publishedAt (not just id) means an admin can hit
+   "Show Again" on something already on screen and it'll re-trigger,
+   even though the document's id hasn't changed. */
+function publishKey(docSnap) {
+  const data = docSnap.data();
+  const ms = data.publishedAt?.toMillis ? data.publishedAt.toMillis() : 0;
+  return `${docSnap.id}_${ms}`;
+}
+
+/* watches a single-doc "latest" query and calls onChange(data) whenever
+   a genuinely new publish happens — skips the initial snapshot on page
+   load so refreshing the screen doesn't replay the last thing shown. */
+function watchLatest(collectionName, orderField, onChange) {
+  let isFirstLoad = true;
+  let lastKey = null;
+  const q = query(collection(db, collectionName), orderBy(orderField, "desc"), limit(1));
+  onSnapshot(q, (snap) => {
+    if (snap.empty) { isFirstLoad = false; return; }
+    const docSnap = snap.docs[0];
+    const key = publishKey(docSnap);
+    if (isFirstLoad) {
+      isFirstLoad = false;
+      lastKey = key;
+      return;
+    }
+    if (key !== lastKey) {
+      lastKey = key;
+      onChange(docSnap.data());
+    }
+  });
+}
+
+/* ---------- result announcement overlay ---------- */
 const overlay = document.getElementById("announceOverlay");
 const elMedal = document.getElementById("announceMedal");
 const elName = document.getElementById("announceName");
@@ -101,19 +139,25 @@ function showAnnouncement(data) {
   }, 6000);
 }
 
-let firstAnnouncementLoad = true;
-let lastAnnouncementId = null;
-const annQuery = query(collection(db, "announcements"), orderBy("timestamp", "desc"), limit(1));
-onSnapshot(annQuery, (snap) => {
-  if (snap.empty) { firstAnnouncementLoad = false; return; }
-  const doc = snap.docs[0];
-  if (firstAnnouncementLoad) {
-    firstAnnouncementLoad = false;
-    lastAnnouncementId = doc.id;
-    return;
-  }
-  if (doc.id !== lastAnnouncementId) {
-    lastAnnouncementId = doc.id;
-    showAnnouncement(doc.data());
-  }
-});
+watchLatest("announcements", "publishedAt", showAnnouncement);
+
+/* ---------- thought / message overlay ---------- */
+const messageOverlay = document.getElementById("messageOverlay");
+const elMessageText = document.getElementById("messageText");
+
+let messageTimer = null;
+function showMessage(data) {
+  elMessageText.textContent = data.text || "";
+
+  clearTimeout(messageTimer);
+  messageOverlay.classList.remove("hide");
+  messageOverlay.classList.add("show");
+
+  messageTimer = setTimeout(() => {
+    messageOverlay.classList.remove("show");
+    messageOverlay.classList.add("hide");
+    setTimeout(() => messageOverlay.classList.remove("hide"), 400);
+  }, 7000);
+}
+
+watchLatest("messages", "publishedAt", showMessage);
