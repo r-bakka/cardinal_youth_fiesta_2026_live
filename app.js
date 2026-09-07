@@ -50,7 +50,7 @@ function renderHouses(dataById) {
       <img class="card-frame" src="assets/card-${id}.png" alt="${info.label}">
       <div class="card-text">
         <div class="card-name">${info.label.replace(" House", "")}</div>
-        <div class="card-house-label">House</div>
+        <div class="card-house-label"></div>
         <div class="card-divider"></div>
         <div class="card-points" id="pts-${id}">${pointsCache[id] ?? 0}</div>
         <div class="card-points-label">Points</div>
